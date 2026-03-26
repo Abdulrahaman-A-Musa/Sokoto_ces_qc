@@ -1,5 +1,5 @@
 # =============================================================================
-# SARMAAN II COVERAGE EVALUATION DASHBOARD - ADAMAWA STATE
+# SARMAAN II COVERAGE EVALUATION DASHBOARD - KEBBI STATE
 # =============================================================================
 
 import streamlit as st
@@ -11,7 +11,7 @@ import re
 
 # ---------------- PAGE CONFIGURATION ----------------
 st.set_page_config(
-    page_title="SARMAAN II Coverage Evaluation Dashboard - Adamawa",
+    page_title="SARMAAN II Coverage Evaluation Dashboard - Kebbi",
     layout="wide",
     initial_sidebar_state="expanded",
     page_icon="📊"
@@ -22,44 +22,52 @@ ADMIN_USERNAME = "Admin"
 
 # LGA username to LGA name mapping (no passwords needed)
 LGA_CREDENTIALS = {
-    "Demsa": "Demsa",
-    "Guyuk": "Guyuk",
-    "Hong": "Hong",
-    "Madagali": "Madagali",
-    "Michika": "Michika",
-    "Song": "Song",
+    "Aleiro": "Aleiro",
+    "Argungu": "Argungu",
+    "Bagudo": "Bagudo",
+    "Fakai": "Fakai",
+    "Maiyama": "Maiyama",
+    "Shanga": "Shanga",
 }
 
 # Load KoboToolbox URL from Streamlit secrets (secure)
-KOBO_DATA_URL = st.secrets.get("KOBO_DATA_URL", "")
+#KOBO_DATA_URL = st.secrets.get("KOBO_DATA_URL", "")
+
+KOBO_DATA_URL= "https://kf.kobotoolbox.org/api/v2/assets/amTtqbPoG4Fei6SvasEdxF/export-settings/esXDwg4kyBgnC9Fp8nSP5qt/data.xlsx"
 
 # ---------------- COMMUNITY MAPPING DATA ----------------
 COMMUNITY_MAPPING_DATA = """Q2. Local Government Area	Q3.Ward	Q4. Community Name	community_name	Planned HH
 
-Demsa	Bille	Wurokiri	10111	19
-Demsa	Bille	Gansari	10112	110
-Demsa	Borrong	Mbumara	10121	133
-Demsa	Borrong	Bange	10122	190
-Guyuk	Banjiram	Kwamajuwe	10211	37
-Guyuk	Banjiram	Gidan Zana Gugu	10212	91
-Guyuk	Bobini	Waja	10221	51
-Guyuk	Bobini	Deremina	10222	94
-Hong	Bangshika	Yadi Masallachi	10311	40
-Hong	Bangshika	Bakin Kasuwa	10312	76
-Hong	Daksiri	Kwadaku	10321	41
-Hong	Daksiri	Daksiri Center	10322	25
-Madagali	Bebel	Hidik	10411	28
-Madagali	Bebel	Dirif A	10412	40
-Madagali	Duhu	Shuwa Papka B	10421	70
-Madagali	Duhu	Wuro Haruna B	10422	23
-Michika	Bazza/Margi	Ghumtika Kasa	10511	38
-Michika	Bazza/Margi	Ldaba	10512	21
-Michika	Futudou/Futuless	Milike	10521	154
-Michika	Futudou/Futuless	Ntsoki	10522	70
-Song	Dirma	Dirma	10611	93
-Song	Dirma	Roffo Ii	10612	39
-Song	Dumne	Bariki	10621	57
-Song	Dumne	Hauyang	10622	35"""
+Aleiro	Aliero S Fada 1	Tudun Wada Bank	90111	55
+Aleiro	Aliero S Fada 2	Labana Area	90121	122
+Aleiro	Danwarai	Yamma	90131	232
+Aleiro	Jiga Birni	Rugga Amadu	90141	68
+Aleiro	Jiga Makera	Rugga Runtuwa	90151	66
+Argungu	Alwasa	Tungar Ruwa	90211	75
+Argungu	Galadima	Garkar Bawa Direba	90221	62
+Argungu	Gulma	Dutsin Dan Lamma	90231	61
+Argungu	Gwazange	Unguwar Malamai	90241	138
+Argungu	Kokani South	Shiyar Garba Layya Gabas	90251	66
+Bagudo	Bagudo Tuga	Bagudo Shiyar Malam Babba Gabas	90311	109
+Bagudo	Bahindi Khaliel	Bokki Doma Zabarmawa Ahmadu Kawa	90321	67
+Bagudo	Bani Tsamiya	Ruggar Malam Maishanu	90331	60
+Bagudo	Illo Sabon Gari	Tungan Hantsi	90341	98
+Bagudo	Kende Kurgu	Shiyar Noma Kende	90351	87
+Fakai	Bajida	Shiyar Hakimi Amadu Maikabi	90411	61
+Fakai	Bangu	Garin Tudu Unguwarsani Banawa	90421	100
+Fakai	Fakai Kuka	Phc Kukah Centre	90431	64
+Fakai	Kangi	Rugar Magaji Awwa	90441	70
+Fakai	Maikende	Kamtu Fada	90451	53
+Maiyama	Andarai	Andarai Kaura Gabas	90511	149
+Maiyama	Giwatazo	Gamjeji Arewa	90521	67
+Maiyama	Kawara	Ruwan Fili Rugga	90531	58
+Maiyama	Maiyama	Yarchediya	90541	68
+Maiyama	Mungadi	Unguwar Fulani	90551	83
+Shanga	Atuwo	Kyastu Ketare	90611	89
+Shanga	Dugu Tsoho	Waiwayi Ketre	90621	55
+Shanga	Gebbe	Binuwa Unguwan Noma	90631	100
+Shanga	Rafin Kirya	Runtuwon Kilmau	90641	56
+Shanga	Sakace	Unguwan Idi Dan Adamu	90651	60"""
 
 # Parse community mapping data
 COMMUNITY_DF = pd.read_csv(StringIO(COMMUNITY_MAPPING_DATA), sep='\t')
@@ -910,23 +918,23 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     # Use full_df for parent lookup if provided, otherwise use df
     lookup_df = full_df if full_df is not None and not full_df.empty else df
     
-    # Find column names flexibly
+    # Find column names flexibly - KEBBI SPECIFIC COLUMNS (exact names from schema)
     lga_col = find_column(lookup_df, [
-        'lgas',
         'Q2. Local Government Area',
+        'lgas',
         'lga', 
         'LGA'
     ])
     ward_col = find_column(lookup_df, [
-        'wards',
         'Q3.Ward',
+        'wards',
         'Q3. Ward',
         'ward', 
         'Ward'
     ])
     community_col = find_column(lookup_df, [
-        'community_name',
         'Q4. Community Name',
+        'community_name',
         'Community Name', 
         'community'
     ])
@@ -936,8 +944,8 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     ])
     unique_code_col = find_column(lookup_df, [
         'unique_code',
-        'unique_code_1', 
         'unique',
+        'unique_code_1', 
         'household_code'
     ])
     validation_status_col = find_column(lookup_df, [
@@ -946,8 +954,8 @@ def perform_qc_checks(df, child_df=None, full_df=None):
         'Validation Status'
     ])
     enumerator_col = find_column(lookup_df, [
-        'username',
-        'Type in your Name', 
+        'Type in your Name',
+        'username', 
         'Enumerator id',
         'Enumerator', 
         'enumerator_name', 
@@ -967,23 +975,23 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                 'Enumerator': row.get(enumerator_col, 'N/A') if enumerator_col else 'N/A'
             }
     
-    # Now use df (filtered) for column lookups in QC checks
+    # Now use df (filtered) for column lookups in QC checks - KEBBI SPECIFIC (exact names from schema)
     lga_col = find_column(df, [
-        'lgas',
         'Q2. Local Government Area',
+        'lgas',
         'lga', 
         'LGA'
     ])
     ward_col = find_column(df, [
-        'wards',
         'Q3.Ward',
+        'wards',
         'Q3. Ward',
         'ward', 
         'Ward'
     ])
     community_col = find_column(df, [
-        'community_name',
         'Q4. Community Name',
+        'community_name',
         'Community Name', 
         'community'
     ])
@@ -993,8 +1001,8 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     ])
     unique_code_col = find_column(df, [
         'unique_code',
-        'unique_code_1', 
         'unique',
+        'unique_code_1', 
         'household_code'
     ])
     validation_status_col = find_column(df, [
@@ -1003,8 +1011,8 @@ def perform_qc_checks(df, child_df=None, full_df=None):
         'Validation Status'
     ])
     enumerator_col = find_column(df, [
-        'username',
-        'Type in your Name', 
+        'Type in your Name',
+        'username', 
         'Enumerator id',
         'Enumerator', 
         'enumerator_name', 
@@ -1013,15 +1021,15 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     
     # QC Check 1: duration_of_stay > age_hhead (Years living > Age of HH Head)
     q22_col = find_column(df, [
-        'duration_of_stay',
         'Q22. How long have you been living continuously in ${community_confirm}',
+        'duration_of_stay',
         'Q22', 
         'years_living', 
         'residence_duration'
     ])
     q13_col = find_column(df, [
-        'age_hhead',
         'Q13. Age of Head of the Household',
+        'age_hhead',
         'Q13',
         'hh_head_age',
         'age_head'
@@ -1044,24 +1052,25 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     
     # QC Check 2: Education vs Occupation mismatch
     education_col = find_column(df, [
-        'hh_education_level',
-        'Q20. Highest education level completed', 
+        'Q20. Highest education level completed',
+        'hh_education_level', 
         'Q20', 
         'education', 
         'education_level'
     ])
     occupation_col = find_column(df, [
-        'hh_occupation',
         'Q21. Occupation',
+        'hh_occupation',
         'Occupation', 
         'occupation', 
         'Q21'
     ])
     
     if education_col and occupation_col:
+        # Match both formats: "Professional/technical/managerial" OR individual words
         edu_occ_issue = df[
             (df[education_col].astype(str).str.contains('No Formal Education', case=False, na=False)) &
-            (df[occupation_col].astype(str).str.contains('Professional|technical|managerial', case=False, na=False))
+            (df[occupation_col].astype(str).str.contains('Professional|technical|managerial', case=False, na=False, regex=True))
         ]
         for idx, row in edu_occ_issue.iterrows():
             qc_issues.append({
@@ -1112,39 +1121,76 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     
     # QC Check 5: Check child_infoo sheet if provided (children 1-59 months)
     if child_df is not None and not child_df.empty:
-        # Find child sheet columns - updated for Adamawa structure
+        # Find child sheet columns - KEBBI SPECIFIC (exact column name from schema)
         age_col = find_column(child_df, [
-            'child_names11',
             'Q88. Child name and age ${child_idd} as at when MDA was done (27th November to 2nd December or 13th to 14th December 2025)',
             'Q88. Child name and age ${child_idd} as at when MDA was done (21st to 27th November 2025)',
             'Q88. Child name and age ${child_idd} as at when MDA was done (13th to 22nd December 2025)',
             'Q88. Child name and age ${child_idd} as at when MDA was done (6th to 11th December 2025)',
             'Q88. Child name and age ${child_idd} as at when MDA was done (19th to 25th July 2025)',
+            'child_names11',
             'age_months',
             'child_age'
         ])
         q94_col = find_column(child_df, [
-            'swallow',
             'Q94. Did child ${child_idd} swallow the AZM offered?',
+            'swallow',
             'Q94',
             'child_swallow_azm'
         ])
         
         # Check Q94 (child swallowed AZM) AND child age >59 months
         if age_col and q94_col:
+            # First try numeric comparison (for direct age values)
+            swallowed_over_59 = child_df[
+                (pd.to_numeric(child_df[age_col], errors='coerce') > 59) &
+                (child_df[q94_col].astype(str).str.contains('Yes', case=False, na=False))
+            ]
+            for idx, row in swallowed_over_59.iterrows():
+                submission_uuid = row.get('_submission__uuid', 'N/A')
+                parent_info = parent_lookup.get(submission_uuid, {'LGA': 'N/A', 'Ward': 'N/A', 'Community': 'N/A'})
+                qc_issues.append({
+                    'LGA': parent_info['LGA'],
+                    'Ward': parent_info['Ward'],
+                    'Community': parent_info['Community'],
+                    'Unique HH ID': parent_info.get('Unique HH ID', 'N/A'),
+                    'Enumerator': parent_info.get('Enumerator', 'N/A'),
+                    'Validation Status': parent_info.get('Validation Status', 'N/A'),
+                    'Issue Type': 'Q94 Yes & Child Age >59 months',
+                    'Description': f'Child {row.get("child_idd", "N/A")} aged {row.get(age_col, "N/A")} months (>59) swallowed AZM (unique_code2: {row.get("unique_code2", "N/A")})',
+                    'Row Index': idx
+                })
+        
+        # Check for Selection of Non-Eligible Child (age outside 1-59 months)
+        if age_col:
             for idx, row in child_df.iterrows():
-                # Check if child swallowed AZM
-                swallowed = str(row.get(q94_col, '')).strip()
-                if 'yes' in swallowed.lower():
-                    # Extract age from text
+                # Try direct numeric conversion first
+                age_value = pd.to_numeric(row.get(age_col, ''), errors='coerce')
+                
+                # If numeric conversion works, use it
+                if pd.notna(age_value):
+                    if age_value < 1 or age_value > 59:
+                        submission_uuid = row.get('_submission__uuid', 'N/A')
+                        parent_info = parent_lookup.get(submission_uuid, {'LGA': 'N/A', 'Ward': 'N/A', 'Community': 'N/A'})
+                        qc_issues.append({
+                            'LGA': parent_info['LGA'],
+                            'Ward': parent_info['Ward'],
+                            'Community': parent_info['Community'],
+                            'Unique HH ID': parent_info.get('Unique HH ID', 'N/A'),
+                            'Enumerator': parent_info.get('Enumerator', 'N/A'),
+                            'Validation Status': parent_info.get('Validation Status', 'N/A'),
+                            'Issue Type': 'Selection of non eligible child',
+                            'Description': f'Child {row.get("child_idd", "N/A")}: Age {age_value} months is outside eligible range (1-59 months) (unique_code2: {row.get("unique_code2", "N/A")})',
+                            'Row Index': idx
+                        })
+                else:
+                    # If not numeric, try text extraction (e.g., "Name - 72 months")
                     age_text = str(row.get(age_col, '')).strip()
                     if age_text and age_text not in ['nan', 'N/A', '']:
-                        # Extract numeric value from text like "Khalid Ibrahim - 72 months"
                         match = re.search(r'(\d+)\s*months?', age_text, re.IGNORECASE)
                         if match:
                             age_value = int(match.group(1))
-                            # Flag if age > 59 months AND child swallowed AZM
-                            if age_value > 59:
+                            if age_value < 1 or age_value > 59:
                                 submission_uuid = row.get('_submission__uuid', 'N/A')
                                 parent_info = parent_lookup.get(submission_uuid, {'LGA': 'N/A', 'Ward': 'N/A', 'Community': 'N/A'})
                                 qc_issues.append({
@@ -1154,70 +1200,51 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                                     'Unique HH ID': parent_info.get('Unique HH ID', 'N/A'),
                                     'Enumerator': parent_info.get('Enumerator', 'N/A'),
                                     'Validation Status': parent_info.get('Validation Status', 'N/A'),
-                                    'Issue Type': 'Q94 Yes & Child Age >59 months',
-                                    'Description': f'Child {row.get("child_idd", "N/A")}: "{age_text}" aged {age_value} months (>59) swallowed AZM (unique_code2: {row.get("unique_code2", "N/A")})',
+                                    'Issue Type': 'Selection of non eligible child',
+                                    'Description': f'Child {row.get("child_idd", "N/A")}: "{age_text}" - Age {age_value} months is outside eligible range (1-59 months) (unique_code2: {row.get("unique_code2", "N/A")})',
                                     'Row Index': idx
                                 })
         
-        # Check for Selection of Non-Eligible Child (age > 59 months in Q88)
-        if age_col:
-            for idx, row in child_df.iterrows():
-                age_text = str(row.get(age_col, '')).strip()
-                if age_text and age_text != 'nan' and age_text != 'N/A':
-                    # Extract numeric value from text like "Khalid Ibrahim - 72 months"
-                    match = re.search(r'(\d+)\s*months?', age_text, re.IGNORECASE)
-                    if match:
-                        age_value = int(match.group(1))
-                        # Flag if age is outside 1-59 months range
-                        if age_value < 1 or age_value > 59:
-                            submission_uuid = row.get('_submission__uuid', 'N/A')
-                            parent_info = parent_lookup.get(submission_uuid, {'LGA': 'N/A', 'Ward': 'N/A', 'Community': 'N/A'})
-                            qc_issues.append({
-                                'LGA': parent_info['LGA'],
-                                'Ward': parent_info['Ward'],
-                                'Community': parent_info['Community'],
-                                'Unique HH ID': parent_info.get('Unique HH ID', 'N/A'),
-                                'Enumerator': parent_info.get('Enumerator', 'N/A'),
-                                'Validation Status': parent_info.get('Validation Status', 'N/A'),
-                                'Issue Type': 'Selection of non eligible child',
-                                'Description': f'Child {row.get("child_idd", "N/A")}: "{age_text}" - Age {age_value} months is outside eligible range (1-59 months) (unique_code2: {row.get("unique_code2", "N/A")})',
-                                'Row Index': idx
-                            })
-        
-        # Check for Repetitive Selection of Child (same child name AND age with same _submission__uuid)
+        # Check for Repetitive Selection of Child (same child age with same _submission__uuid)
         if age_col and '_submission__uuid' in child_df.columns:
-            # Group by _submission__uuid and check for duplicate child entries (name + age)
+            # Group by _submission__uuid and check for duplicate child entries
             for submission_uuid, group in child_df.groupby('_submission__uuid'):
                 # Skip households with only 1 child record (cannot have duplicates)
                 if len(group) < 2:
                     continue
                 
-                # Build a dictionary to track each unique child entry (name + age)
+                # Build a dictionary to track each unique child age
                 child_entries_dict = {}
                 
                 for idx, row in group.iterrows():
-                    age_text = str(row.get(age_col, '')).strip()
-                    if not age_text or age_text.lower() in ['nan', 'n/a', '']:
-                        continue
+                    # Try numeric age first
+                    age_value = pd.to_numeric(row.get(age_col, ''), errors='coerce')
                     
-                    # Normalize the text for comparison (lowercase and strip extra spaces)
-                    normalized_key = ' '.join(age_text.lower().split())
+                    if pd.notna(age_value):
+                        # Use numeric age as key
+                        normalized_key = str(int(age_value))
+                    else:
+                        # Fall back to text-based age
+                        age_text = str(row.get(age_col, '')).strip()
+                        if not age_text or age_text.lower() in ['nan', 'n/a', '']:
+                            continue
+                        # Normalize the text for comparison
+                        normalized_key = ' '.join(age_text.lower().split())
                     
                     if normalized_key not in child_entries_dict:
                         child_entries_dict[normalized_key] = []
                     
                     child_entries_dict[normalized_key].append({
                         'idx': idx,
-                        'original_text': age_text,
+                        'original_text': row.get(age_col, 'N/A'),
                         'unique_code2': row.get('unique_code2', 'N/A'),
                         'child_idd': row.get('child_idd', 'N/A')
                     })
                 
-                # Flag ONLY if same name+age appears more than once
+                # Flag ONLY if same age appears more than once
                 for normalized_key, occurrences in child_entries_dict.items():
                     if len(occurrences) > 1:
-                        # TRUE DUPLICATE: Same exact name and age appears multiple times
-                        # Create ONE QC issue (not one per occurrence) with all unique_code2 values
+                        # TRUE DUPLICATE: Same age appears multiple times
                         parent_info = parent_lookup.get(submission_uuid, {'LGA': 'N/A', 'Ward': 'N/A', 'Community': 'N/A'})
                         
                         # Get all unique_code2 values for this duplicate
@@ -1235,7 +1262,7 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                             'Enumerator': parent_info.get('Enumerator', 'N/A'),
                             'Validation Status': parent_info.get('Validation Status', 'N/A'),
                             'Issue Type': 'Repetitive selection of child',
-                            'Description': f'Child "{first_occurrence["original_text"]}" appears {len(occurrences)} times in same household (unique_code2: {unique_code2_str})',
+                            'Description': f'Child age "{first_occurrence["original_text"]}" months appears {len(occurrences)} times in same household (unique_code2: {unique_code2_str})',
                             'Row Index': first_occurrence['idx']
                         })
         
@@ -1265,25 +1292,19 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     
     # QC Check 7: Urban settlement without basic amenities (batch check by enumerator)
     settlement_col = find_column(df, [
-        'settlement_type',
-        'Q5. Type of Settlement', 
+        'Q5. Type of Settlement',
+        'settlement_type', 
         'Q5', 
         'settlement'
     ])
     enumerator_col = find_column(df, [
-        'username',
-        'Type in your Name', 
+        'Type in your Name',
+        'username', 
         'Enumerator', 
         'enumerator_name'
     ])
+    # KEBBI SPECIFIC AMENITY COLUMNS (from actual data schema with Q## format)
     amenity_cols = [
-        'electricity', 'radio', 'television', 'a_non_mobile_telephone',
-        'computer', 'refrigerator', 'chair', 'bed', 'sofa',
-        'cupboard', 'animal_drawn_cart', 'bicycle',
-        'motorcycle_or_motor_scooter', 'car_or_truck', 'boat_with_motor',
-        'canoe', 'keke_napep', 'fan', 'watch', 'mobile_telephone',
-        'table', 'electric_iron', 'bank_account', 'air_condition', 
-        'generator',
         'Q23. Electricity', 'Q24. Radio', 'Q25. Television', 'Q26. A non-mobile telephone',
         'Q27. Computer', 'Q28. Refrigerator', 'Q29. Chair', 'Q30. Bed', 'Q31. Sofa',
         'Q32. Cupboard', 'Q33. Animal-drawn cart (donkey, horse, camel)', 'Q34. Bicycle',
@@ -1374,7 +1395,7 @@ def login_page():
             SARMAAN II Coverage Dashboard
         </h1>
         <p style='color: #666; font-size: 1.1rem; font-weight: 500;'>
-            Adamawa State - Secure Data Analytics Platform
+            Kebbi State - Secure Data Analytics Platform
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -1388,7 +1409,7 @@ def login_page():
             - Username: `Admin`
             
             **LGA Users:**
-            - `Demsa`, `Guyuk`, `Hong`, `Madagali`, `Michika`, `Song`
+            - `Aleiro`, `Argungu`, `Bagudo`, `Fakai`, `Maiyama`, `Shanga`
             
             """)
         
@@ -1397,7 +1418,7 @@ def login_page():
         with st.form("login_form"):
             st.markdown("<p style='text-align: center; color: #666; margin-bottom: 1.5rem;'>Enter your username to continue</p>", unsafe_allow_html=True)
             
-            username = st.text_input("👤 Username", placeholder="Enter your username (e.g., Admin or Demsa)")
+            username = st.text_input("👤 Username", placeholder="Enter your username (e.g., Admin or Aleiro)")
             
             st.markdown("<br>", unsafe_allow_html=True)
             submit = st.form_submit_button("🚀 Login to Dashboard", use_container_width=True)
@@ -1801,27 +1822,28 @@ def run_dashboard():
         st.markdown("### 📝 Detailed QC Issues Table")
         st.write(f"**{len(qc_results):,}** issues flagged across LGA, Ward, and Community")
         
-        # Add filtering options for QC results
-        qc_filter_col1, qc_filter_col2 = st.columns(2)
-        
-        with qc_filter_col1:
-            selected_issue_types = st.multiselect(
-                "Filter by Issue Type",
-                options=sorted(qc_results['Issue Type'].unique()),
-                default=sorted(qc_results['Issue Type'].unique()),
-                key="qc_issue_filter"
-            )
-        
-        with qc_filter_col2:
-            if 'LGA' in qc_results.columns:
-                selected_lgas_qc = st.multiselect(
-                    "Filter by LGA",
-                    options=sorted(qc_results['LGA'].unique()),
-                    default=sorted(qc_results['LGA'].unique()),
-                    key="qc_lga_filter"
+        # Add filtering options for QC results (collapsible)
+        with st.expander("🔍 Filter QC Issues (Optional)", expanded=False):
+            qc_filter_col1, qc_filter_col2 = st.columns(2)
+            
+            with qc_filter_col1:
+                selected_issue_types = st.multiselect(
+                    "Filter by Issue Type",
+                    options=sorted(qc_results['Issue Type'].unique()),
+                    default=sorted(qc_results['Issue Type'].unique()),
+                    key="qc_issue_filter"
                 )
-            else:
-                selected_lgas_qc = []
+            
+            with qc_filter_col2:
+                if 'LGA' in qc_results.columns:
+                    selected_lgas_qc = st.multiselect(
+                        "Filter by LGA",
+                        options=sorted(qc_results['LGA'].unique()),
+                        default=sorted(qc_results['LGA'].unique()),
+                        key="qc_lga_filter"
+                    )
+                else:
+                    selected_lgas_qc = []
         
         # Filter QC results
         filtered_qc = qc_results.copy()
@@ -1830,13 +1852,18 @@ def run_dashboard():
         if selected_lgas_qc:
             filtered_qc = filtered_qc[filtered_qc['LGA'].isin(selected_lgas_qc)]
         
+        # Show filtered count if different from total
+        if len(filtered_qc) < len(qc_results):
+            st.info(f"📊 Showing **{len(filtered_qc):,}** of **{len(qc_results):,}** issues (filtered)")
+        
         # Remove Row Index column before displaying
-        if 'Row Index' in filtered_qc.columns:
-            filtered_qc = filtered_qc.drop(columns=['Row Index'])
+        display_qc = filtered_qc.copy()
+        if 'Row Index' in display_qc.columns:
+            display_qc = display_qc.drop(columns=['Row Index'])
         
         # Display filtered QC table
         st.dataframe(
-            filtered_qc,
+            display_qc,
             use_container_width=True,
             height=500,
             column_config={
@@ -1848,7 +1875,8 @@ def run_dashboard():
                 "Validation Status": st.column_config.TextColumn("Validation Status", width="small"),
                 "Issue Type": st.column_config.TextColumn("Issue Type", width="medium"),
                 "Description": st.column_config.TextColumn("Description", width="large")
-            }
+            },
+            hide_index=True
         )
         
         # QC recommendations
@@ -1863,29 +1891,118 @@ def run_dashboard():
     else:
         st.success("✅ **No QC issues found!** All data quality checks passed successfully.")
         
-        # Debug info to help understand why no issues found
-        with st.expander("🔍 Debug Info: QC Check Details", expanded=True):
-            st.write(f"**Total records being checked:** {len(filtered_df)}")
+        # COMPREHENSIVE Debug info to help understand why no issues found
+        with st.expander("🔍 DEBUG: Show ALL Columns & QC Check Results", expanded=True):
+            st.write(f"**Total records in filtered_df:** {len(filtered_df)}")
+            st.write(f"**Total columns in filtered_df:** {len(filtered_df.columns)}")
             st.write(f"**Child records (child_infoo):** {len(child_infoo_df) if child_infoo_df is not None and not child_infoo_df.empty else 0}")
             
             if not filtered_df.empty:
-                # Check what columns exist
-                st.write("### Available Columns in Main Sheet:")
-                q22_col = find_column(filtered_df, ['duration_of_stay', 'Q22. How long have you been living continuously in ${community_confirm}', 'Q22'])
-                q13_col = find_column(filtered_df, ['age_hhead', 'Q13. Age of Head of the Household', 'Q13'])
-                education_col = find_column(filtered_df, ['hh_education_level', 'Q20. Highest education level completed', 'Q20'])
-                occupation_col = find_column(filtered_df, ['hh_occupation', 'Q21. Occupation', 'Occupation', 'occupation', 'Q21'])
-                unique_code_col = find_column(filtered_df, ['unique_code', 'unique_code_1', 'unique', 'household_code'])
-                settlement_col = find_column(filtered_df, ['settlement_type', 'Q5. Type of Settlement', 'Q5', 'settlement'])
+                # Show ALL column names
+                st.write("### 📋 ALL COLUMNS IN MAIN SHEET:")
+                st.code("\n".join([f"{i+1}. {col}" for i, col in enumerate(filtered_df.columns)]))
                 
-                st.write(f"- **Duration of stay column:** {q22_col if q22_col else '❌ Not found'}")
-                st.write(f"- **Age of HH Head column:** {q13_col if q13_col else '❌ Not found'}")
-                st.write(f"- **Education column:** {education_col if education_col else '❌ Not found'}")
-                st.write(f"- **Occupation column:** {occupation_col if occupation_col else '❌ Not found'}")
-                st.write(f"- **Unique code column:** {unique_code_col if unique_code_col else '❌ Not found'}")
-                st.write(f"- **Settlement type column:** {settlement_col if settlement_col else '❌ Not found'}")
+                st.markdown("---")
+                st.write("### 🔍 QC CHECK 1: Q22 > Q13 (Years Living > Age)")
+                q22_col = find_column(filtered_df, [
+                    'Q22. How long have you been living continuously in ${community_confirm}',
+                    'Q22', 
+                    'years_living', 
+                    'residence_duration'
+                ])
+                q13_col = find_column(filtered_df, [
+                    'Q13. Age of Head of the Household',
+                    'Q13',
+                    'hh_head_age',
+                    'age_head'
+                ])
+                st.write(f"- Q22 column found: **{q22_col if q22_col else '❌ NOT FOUND'}**")
+                st.write(f"- Q13 column found: **{q13_col if q13_col else '❌ NOT FOUND'}**")
+                if q22_col and q13_col:
+                    age_issue_count = len(filtered_df[pd.to_numeric(filtered_df[q22_col], errors='coerce') > pd.to_numeric(filtered_df[q13_col], errors='coerce')])
+                    st.write(f"- **Issues found: {age_issue_count}**")
+                    if age_issue_count > 0:
+                        st.write("Sample data:")
+                        st.dataframe(filtered_df[[q22_col, q13_col]].head(5))
                 
-                # Check for duplicates manually
+                st.markdown("---")
+                st.write("### 🔍 QC CHECK 2: Education vs Occupation")
+                education_col = find_column(filtered_df, [
+                    'Q20. Highest education level completed',
+                    'hh_education_level', 
+                    'Q20', 
+                    'education', 
+                    'education_level'
+                ])
+                occupation_col = find_column(filtered_df, [
+                    'Q21. Occupation',
+                    'hh_occupation',
+                    'Occupation', 
+                    'occupation', 
+                    'Q21'
+                ])
+                st.write(f"- Education column: **{education_col if education_col else '❌ NOT FOUND'}**")
+                st.write(f"- Occupation column: **{occupation_col if occupation_col else '❌ NOT FOUND'}**")
+                if education_col and occupation_col:
+                    # Show unique values for debugging
+                    st.write(f"**Unique Education values:**")
+                    st.code("\n".join(filtered_df[education_col].dropna().unique().astype(str).tolist()[:20]))
+                    st.write(f"**Unique Occupation values:**")
+                    st.code("\n".join(filtered_df[occupation_col].dropna().unique().astype(str).tolist()[:20]))
+                    
+                    # Check for "No Formal Education"
+                    no_formal_count = len(filtered_df[filtered_df[education_col].astype(str).str.contains('No Formal Education', case=False, na=False)])
+                    st.write(f"- **Records with 'No Formal Education': {no_formal_count}**")
+                    
+                    # Check for Professional occupations - TEST REGEX
+                    professional_count = len(filtered_df[filtered_df[occupation_col].astype(str).str.contains('Professional|technical|managerial', case=False, na=False, regex=True)])
+                    st.write(f"- **Records with Professional/Technical/Managerial (regex): {professional_count}**")
+                    
+                    # Also test exact match
+                    exact_match_count = len(filtered_df[filtered_df[occupation_col].astype(str).str.contains('Professional/technical/managerial', case=False, na=False)])
+                    st.write(f"- **Records with 'Professional/technical/managerial' (exact): {exact_match_count}**")
+                    
+                    # DETAILED ROW BY ROW CHECK
+                    st.write("**🔬 DETAILED ROW-BY-ROW ANALYSIS (first 20 rows):**")
+                    for idx, row in filtered_df.head(20).iterrows():
+                        edu_val = str(row.get(education_col, '')).strip()
+                        occ_val = str(row.get(occupation_col, '')).strip()
+                        
+                        # Test conditions
+                        has_no_formal = 'no formal education' in edu_val.lower()
+                        has_professional = any(word in occ_val.lower() for word in ['professional', 'technical', 'managerial'])
+                        both_match = has_no_formal and has_professional
+                        
+                        if has_no_formal or has_professional:
+                            st.write(f"**Row {idx}:**")
+                            st.write(f"  - Education: `{edu_val}`")
+                            st.write(f"  - Occupation: `{occ_val}`")
+                            st.write(f"  - Has 'No Formal Education'? **{has_no_formal}**")
+                            st.write(f"  - Has Professional/Technical/Managerial? **{has_professional}**")
+                            st.write(f"  - ⚠️ **SHOULD BE FLAGGED? {both_match}**")
+                            st.write("---")
+                    
+                    edu_occ_count = len(filtered_df[
+                        (filtered_df[education_col].astype(str).str.contains('No Formal Education', case=False, na=False)) &
+                        (filtered_df[occupation_col].astype(str).str.contains('Professional|technical|managerial', case=False, na=False, regex=True))
+                    ])
+                    st.write(f"- **Issues found (both conditions met): {edu_occ_count}**")
+                    if edu_occ_count > 0:
+                        st.write("Sample data:")
+                        st.dataframe(filtered_df[[education_col, occupation_col]].head(5))
+                    else:
+                        st.write("**Sample education + occupation combinations (first 10):**")
+                        st.dataframe(filtered_df[[education_col, occupation_col]].head(10))
+                
+                st.markdown("---")
+                st.write("### 🔍 QC CHECK 6: Duplicate Unique Codes")
+                unique_code_col = find_column(filtered_df, [
+                    'unique_code',
+                    'unique_code_1', 
+                    'unique',
+                    'household_code'
+                ])
+                st.write(f"- Unique code column: **{unique_code_col if unique_code_col else '❌ NOT FOUND'}**")
                 if unique_code_col:
                     validation_status_col = find_column(filtered_df, ['_validation_status', 'validation_status', 'Validation Status'])
                     df_for_dup_check = filtered_df.copy()
@@ -1894,81 +2011,133 @@ def run_dashboard():
                             ~df_for_dup_check[validation_status_col].astype(str).str.contains('Not Approved', case=False, na=False)
                         ]
                     duplicates = df_for_dup_check[df_for_dup_check.duplicated(subset=[unique_code_col], keep=False)]
-                    st.write(f"- **Duplicate unique_code records:** {len(duplicates)}")
+                    st.write(f"- **Duplicate records found: {len(duplicates)}**")
+                    if len(duplicates) > 0:
+                        st.write("Duplicate unique codes:")
+                        st.dataframe(duplicates[[unique_code_col]].value_counts())
+                
+                st.markdown("---")
+                st.write("### 🔍 QC CHECK 7: Urban HH Without Amenities")
+                settlement_col = find_column(filtered_df, [
+                    'Q5. Type of Settlement',
+                    'settlement_type', 
+                    'Q5', 
+                    'settlement'
+                ])
+                st.write(f"- Settlement column: **{settlement_col if settlement_col else '❌ NOT FOUND'}**")
+                if settlement_col:
+                    # Show unique settlement values
+                    st.write("**Unique Settlement values:**")
+                    st.code("\n".join(filtered_df[settlement_col].dropna().unique().astype(str).tolist()))
+                    
+                    urban_count = len(filtered_df[filtered_df[settlement_col].astype(str).str.contains('Urban', case=False, na=False)])
+                    st.write(f"- **Urban households: {urban_count}**")
+                    
+                    # Check amenity columns (KEBBI format - Q## format from schema)
+                    amenity_cols = [
+                        'Q23. Electricity', 'Q24. Radio', 'Q25. Television', 'Q26. A non-mobile telephone',
+                        'Q27. Computer', 'Q28. Refrigerator', 'Q29. Chair', 'Q30. Bed', 'Q31. Sofa',
+                        'Q32. Cupboard', 'Q33. Animal-drawn cart (donkey, horse, camel)', 'Q34. Bicycle',
+                        'Q35. Motorcycle or motor scooter', 'Q36. Car or truck', 'Q37. Boat with motor',
+                        'Q38. Canoe', 'Q39. Keke Napep', 'Q40. Fan', 'Q41. Watch', 'Q42. Mobile telephone',
+                        'Q43. Table', 'Q44. Electric Iron', 'Q45. Bank account', 'Q46. Air condition', 
+                        'Q47. Generator'
+                    ]
+                    existing_amenities = [col for col in amenity_cols if col in filtered_df.columns]
+                    st.write(f"- **Amenity columns found: {len(existing_amenities)}/{len(amenity_cols)}**")
+                    if existing_amenities:
+                        st.write("**Available amenity columns:**")
+                        st.code("\n".join(existing_amenities))
+                        
+                        # Show sample amenity values for urban households
+                        if urban_count > 0:
+                            urban_sample = filtered_df[filtered_df[settlement_col].astype(str).str.contains('Urban', case=False, na=False)]
+                            st.write("**Sample amenity values from urban households (first 5 columns, first 5 rows):**")
+                            sample_amenities = existing_amenities[:5]
+                            st.dataframe(urban_sample[sample_amenities].head(5))
+                            
+                            # Check unique values in each amenity column
+                            st.write("**Unique values in amenity columns (for debugging):**")
+                            for amenity in sample_amenities[:3]:
+                                unique_vals = urban_sample[amenity].dropna().unique().astype(str).tolist()
+                                st.write(f"  - **{amenity}**: {unique_vals}")
+                            
+                            # DETAILED ROW-BY-ROW TEST FOR URBAN HOUSEHOLDS
+                            st.write("**🔬 DETAILED ROW-BY-ROW ANALYSIS (first 10 urban households):**")
+                            enumerator_col = find_column(filtered_df, ['Type in your Name', 'username', 'Enumerator', 'enumerator_name'])
+                            for idx, row in urban_sample.head(10).iterrows():
+                                st.write(f"**Row {idx}:**")
+                                if enumerator_col:
+                                    st.write(f"  - Enumerator: `{row.get(enumerator_col, 'N/A')}`")
+                                
+                                has_any_amenity = False
+                                amenity_details = []
+                                for amenity in existing_amenities[:10]:  # Check first 10 amenities
+                                    val = str(row.get(amenity, '')).strip().lower()
+                                    is_no_or_empty = val in ['no', '']
+                                    amenity_details.append(f"    • {amenity}: '{val}' (No/empty? {is_no_or_empty})")
+                                    if not is_no_or_empty:
+                                        has_any_amenity = True
+                                
+                                st.code("\n".join(amenity_details[:5]))  # Show first 5
+                                st.write(f"  - ✅ **Has ANY amenity (not 'No' or empty)? {has_any_amenity}**")
+                                st.write(f"  - ⚠️ **SHOULD BE FLAGGED (all amenities No/empty)? {not has_any_amenity}**")
+                                st.write("---")
+                    else:
+                        st.warning("⚠️ No amenity columns found! Checking for alternative column names...")
+                        # Search for columns containing 'electric', 'radio', etc.
+                        for keyword in ['electric', 'radio', 'television', 'computer', 'refrigerator']:
+                            matching_cols = [col for col in filtered_df.columns if keyword.lower() in col.lower()]
+                            if matching_cols:
+                                st.write(f"Columns containing '{keyword}': {matching_cols}")
                 
                 # Check child sheet columns
                 if child_infoo_df is not None and not child_infoo_df.empty:
-                    st.write("### Available Columns in Child Sheet:")
+                    st.markdown("---")
+                    st.write("### 🔍 CHILD SHEET (child_infoo) COLUMNS:")
+                    st.write(f"**Total child records:** {len(child_infoo_df)}")
+                    st.write(f"**Total columns:** {len(child_infoo_df.columns)}")
+                    st.code("\n".join([f"{i+1}. {col}" for i, col in enumerate(child_infoo_df.columns)]))
+                    
                     age_col = find_column(child_infoo_df, [
-                        'child_names11',
-                        'Q88. Child name and age ${child_idd} as at when MDA was done (27th November to 2nd December or 13th to 14th December 2025)',
                         'Q88. Child name and age ${child_idd} as at when MDA was done (21st to 27th November 2025)',
                         'Q88. Child name and age ${child_idd} as at when MDA was done (13th to 22nd December 2025)',
                         'Q88. Child name and age ${child_idd} as at when MDA was done (6th to 11th December 2025)',
                         'Q88. Child name and age ${child_idd} as at when MDA was done (19th to 25th July 2025)',
-                        'Q88. Child name and age ${child_idd} as at when MDA was done'
+                        'age_months',
+                        'child_age'
                     ])
-                    q94_col = find_column(child_infoo_df, ['swallow', 'Q94. Did child ${child_idd} swallow the AZM offered?', 'Q94'])
-                    st.write(f"- **Child name/age column:** {age_col if age_col else '❌ Not found'}")
-                    st.write(f"- **Swallow AZM column:** {q94_col if q94_col else '❌ Not found'}")
+                    q94_col = find_column(child_infoo_df, [
+                        'Q94. Did child ${child_idd} swallow the AZM offered?',
+                        'Q94',
+                        'child_swallow_azm',
+                        'swallow'
+                    ])
+                    st.write(f"- **Child age column:** {age_col if age_col else '❌ NOT FOUND'}")
+                    st.write(f"- **Q94 (Swallow AZM) column:** {q94_col if q94_col else '❌ NOT FOUND'}")
                     
                     if age_col:
-                        st.write(f"- **Sample child_names11 values:**")
-                        st.code("\n".join(child_infoo_df[age_col].head(5).astype(str).tolist()))
-                    
-                    # Check for issues manually
-                    if age_col:
+                        st.write("**Sample age values (first 10):**")
+                        st.code("\n".join(child_infoo_df[age_col].head(10).astype(str).tolist()))
+                        
+                        # Manually check for age >59
                         over_59_count = 0
-                        for idx, row in child_infoo_df.head(20).iterrows():
-                            age_text = str(row.get(age_col, '')).strip()
-                            if age_text and age_text not in ['nan', 'N/A', '']:
-                                match = re.search(r'(\d+)\s*months?', age_text, re.IGNORECASE)
-                                if match:
-                                    age_value = int(match.group(1))
-                                    if age_value > 59:
-                                        over_59_count += 1
-                        st.write(f"- **Children >59 months (first 20 records):** {over_59_count}")
+                        under_1_count = 0
+                        for idx, row in child_infoo_df.iterrows():
+                            age_value = pd.to_numeric(row.get(age_col, ''), errors='coerce')
+                            if pd.notna(age_value):
+                                if age_value > 59:
+                                    over_59_count += 1
+                                if age_value < 1:
+                                    under_1_count += 1
+                        st.write(f"- **Children >59 months: {over_59_count}**")
+                        st.write(f"- **Children <1 month: {under_1_count}**")
+                    
+                    if q94_col:
+                        yes_count = len(child_infoo_df[child_infoo_df[q94_col].astype(str).str.contains('Yes', case=False, na=False)])
+                        st.write(f"- **Children who swallowed AZM (Q94=Yes): {yes_count}**")
                 else:
                     st.warning("⚠️ Child sheet (child_infoo) is empty or not loaded!")
-        
-        # Debug info to help understand why no issues found
-        with st.expander("🔍 Debug Info: Why no issues found?"):
-            st.write(f"**Total records being checked:** {len(filtered_df)}")
-            st.write(f"**Columns available:** {len(filtered_df.columns) if not filtered_df.empty else 0}")
-            
-            if not filtered_df.empty:
-                # Check what columns exist
-                settlement_col = find_column(filtered_df, ['Q5. Type of Settlement', 'Q5', 'settlement_type', 'settlement'])
-                lga_col = find_column(filtered_df, ['lgas', 'lga', 'Q2. Local Government Area', 'LGA'])
-                age_col = find_column(filtered_df, [
-                    'Q17. How old is ${name_questionnaire}?', 
-                    'Q17', 
-                    'age', 
-                    'respondent_age',
-                    'Age of child ${child_id} as at when MDA was done (13th to 22nd December 2025)',
-                    'Age of child ${child_id} as at when MDA was done (6th to 11th December 2025)',
-                    'Age of child ${child_id} as at when MDA was done (24th to 29th July 2025)',
-                    'Age of child ${child_id} as at when MDA was done (19th to 25th July 2025)',
-                    'child_age',
-                    'Age',
-                    'age_years'
-                ])
-                enumerator_col = find_column(filtered_df, ['username', 'Type in your Name', 'Enumerator', 'enumerator_name'])
-                
-                st.write(f"- Settlement column found: {settlement_col if settlement_col else '❌ Not found'}")
-                st.write(f"- LGA column found: {lga_col if lga_col else '❌ Not found'}")
-                st.write(f"- Age column found: {age_col if age_col else '❌ Not found'}")
-                st.write(f"- Enumerator column found: {enumerator_col if enumerator_col else '❌ Not found'}")
-                
-                if settlement_col:
-                    urban_count = filtered_df[filtered_df[settlement_col].astype(str).str.contains('Urban', case=False, na=False)]
-                    st.write(f"- Urban households: {len(urban_count)}")
-                    
-                # Show sample column names to help debug
-                st.write("**Sample column names in your data:**")
-                col_list = list(filtered_df.columns[:20])  # Show first 20 columns
-                for col in col_list:
-                    st.write(f"  - {col}")
     
     # Footer
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -1984,7 +2153,7 @@ def run_dashboard():
             </div>
             <div style='border-left: 2px solid #dee2e6; height: 30px;'></div>
             <div style='font-size: 0.9rem; color: #6c757d;'>
-                SARMAAN II Coverage Evaluation Dashboard - Adamawa State
+                SARMAAN II Coverage Evaluation Dashboard - Kebbi State
             </div>
         </div>
         <div style='margin-top: 1rem; font-size: 0.85rem; color: #868e96;'>
