@@ -33,7 +33,8 @@ LGA_CREDENTIALS = {
 # Load KoboToolbox URL from Streamlit secrets (secure)
 #KOBO_DATA_URL = st.secrets.get("KOBO_DATA_URL", "")
 
-KOBO_DATA_URL= "https://kf.kobotoolbox.org/api/v2/assets/amTtqbPoG4Fei6SvasEdxF/export-settings/esXDwg4kyBgnC9Fp8nSP5qt/data.xlsx"
+cls
+
 
 # ---------------- COMMUNITY MAPPING DATA ----------------
 COMMUNITY_MAPPING_DATA = """Q2. Local Government Area	Q3.Ward	Q4. Community Name	community_name	Planned HH
