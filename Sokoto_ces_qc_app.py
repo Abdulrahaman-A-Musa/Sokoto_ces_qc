@@ -1,5 +1,38 @@
 # =============================================================================
-# SARMAAN II COVERAGE EVALUATION DASHBOARD - KEBBI STATE
+# SARMAAN II COVERAGE EVALUATION DASHBOARD - SOKOTO STATE
+# =============================================================================
+# 
+# DATA SCHEMA INFORMATION (Updated: April 1, 2026)
+# -------------------------------------------------
+# This dashboard processes data from KoboToolbox with the following structure:
+#
+# 1. MAIN SHEET: "SARMAAN II C3 SOKOTO COVERAGE EVALUATION LIVE FORM"
+#    - Household questionnaire data
+#    - MDA Date Reference: 15th to 20th December 2025
+#    - Key columns: Q2 (LGA), Q3 (Ward), Q4 (Community), Q8 (Date)
+#    - Household details (Q10-Q22), Assets (Q23-Q47), Water/Sanitation (Q48-Q66)
+#    - MDA Acceptability & Coverage (Q86-Q137)
+#
+# 2. CHILD_INFO SHEET
+#    - Basic child roster (all children in HH)
+#    - Columns: child_id, Name, Age, is_eligible, child_label
+#    - Age reference: "as at when MDA was done (15th to 20th December 2025)"
+#
+# 3. CHILD_INFOO SHEET (Main Coverage Data)
+#    - Detailed info for eligible children (1-59 months)
+#    - Q88: Child name and age (15th to 20th December 2025)
+#    - Q89: Sex of ${child_names11} ${child_idd}
+#    - Q90: Did someone offer child ${child_idd} azithromycin...
+#    - Q91-Q92: Reasons not offered/refused
+#    - Q93: Was child ${child_idd} weighed before being offered AZM
+#    - Q94: Swallowed AZM, Q95: Swallowed in presence
+#    - Q96-Q97: Reasons not swallowed, Q98-Q101: Adverse reactions
+#    - NOTE: Questions use both ${child_names11} and ${child_idd} formats
+#
+# 4. NET_REPEAT SHEET
+#    - Mosquito net data per household
+#    - Q81-Q85: Net acquisition, usage, and reasons for non-use
+#
 # =============================================================================
 
 import streamlit as st
@@ -11,7 +44,7 @@ import re
 
 # ---------------- PAGE CONFIGURATION ----------------
 st.set_page_config(
-    page_title="SARMAAN II Coverage Evaluation Dashboard - Kebbi",
+    page_title="SARMAAN II Coverage Evaluation Dashboard - Sokoto",
     layout="wide",
     initial_sidebar_state="expanded",
     page_icon="📊"
@@ -22,53 +55,56 @@ ADMIN_USERNAME = "Admin"
 
 # LGA username to LGA name mapping (no passwords needed)
 LGA_CREDENTIALS = {
-    "Aleiro": "Aleiro",
-    "Argungu": "Argungu",
-    "Bagudo": "Bagudo",
-    "Fakai": "Fakai",
-    "Maiyama": "Maiyama",
-    "Shanga": "Shanga",
+    "Kware": "Kware",
+    "Rabah": "Rabah",
+    "Tureta": "Tureta",
+    "Wamakko": "Wamakko",
+    "Wurno": "Wurno",
+    "Yabo": "Yabo",
 }
 
 # Load KoboToolbox URL from Streamlit secrets (secure)
-#KOBO_DATA_URL = st.secrets.get("KOBO_DATA_URL", "")
+# Set your KoboToolbox data URL here or in Streamlit secrets
+try:
+    KOBO_DATA_URL = st.secrets.get("KOBO_DATA_URL", "")
+except Exception:
+    KOBO_DATA_URL = ""  # Default empty if secrets not configured
 
-cls
 
 
 # ---------------- COMMUNITY MAPPING DATA ----------------
 COMMUNITY_MAPPING_DATA = """Q2. Local Government Area	Q3.Ward	Q4. Community Name	community_name	Planned HH
 
-Aleiro	Aliero S Fada 1	Tudun Wada Bank	90111	55
-Aleiro	Aliero S Fada 2	Labana Area	90121	122
-Aleiro	Danwarai	Yamma	90131	232
-Aleiro	Jiga Birni	Rugga Amadu	90141	68
-Aleiro	Jiga Makera	Rugga Runtuwa	90151	66
-Argungu	Alwasa	Tungar Ruwa	90211	75
-Argungu	Galadima	Garkar Bawa Direba	90221	62
-Argungu	Gulma	Dutsin Dan Lamma	90231	61
-Argungu	Gwazange	Unguwar Malamai	90241	138
-Argungu	Kokani South	Shiyar Garba Layya Gabas	90251	66
-Bagudo	Bagudo Tuga	Bagudo Shiyar Malam Babba Gabas	90311	109
-Bagudo	Bahindi Khaliel	Bokki Doma Zabarmawa Ahmadu Kawa	90321	67
-Bagudo	Bani Tsamiya	Ruggar Malam Maishanu	90331	60
-Bagudo	Illo Sabon Gari	Tungan Hantsi	90341	98
-Bagudo	Kende Kurgu	Shiyar Noma Kende	90351	87
-Fakai	Bajida	Shiyar Hakimi Amadu Maikabi	90411	61
-Fakai	Bangu	Garin Tudu Unguwarsani Banawa	90421	100
-Fakai	Fakai Kuka	Phc Kukah Centre	90431	64
-Fakai	Kangi	Rugar Magaji Awwa	90441	70
-Fakai	Maikende	Kamtu Fada	90451	53
-Maiyama	Andarai	Andarai Kaura Gabas	90511	149
-Maiyama	Giwatazo	Gamjeji Arewa	90521	67
-Maiyama	Kawara	Ruwan Fili Rugga	90531	58
-Maiyama	Maiyama	Yarchediya	90541	68
-Maiyama	Mungadi	Unguwar Fulani	90551	83
-Shanga	Atuwo	Kyastu Ketare	90611	89
-Shanga	Dugu Tsoho	Waiwayi Ketre	90621	55
-Shanga	Gebbe	Binuwa Unguwan Noma	90631	100
-Shanga	Rafin Kirya	Runtuwon Kilmau	90641	56
-Shanga	Sakace	Unguwan Idi Dan Adamu	90651	60"""
+Kware	Bankanu	Shiyar Famai	70111	55
+Kware	Basansan	Modawa S Runji	70121	57
+Kware	Durbawa	Torankar Dakare Y	70131	58
+Kware	Gandu	Ummaruma	70141	43
+Kware	Gidan Rugga More	D Maigari	70151	54
+Rabah	Gandi 1	Dubbulawa	70211	42
+Rabah	Gandi 2	Dan Gazori [Idp]	70221	63
+Rabah	Goddodi	Shyar Durumbu	70231	77
+Rabah	Kurya	Shiyar Dan Hajo	70241	73
+Rabah	Maikujera	Shiyar Galadima Kada A	70251	51
+Tureta	Duma	Makera	70311	47
+Tureta	Furagirke	Garbekane Assibiti	70321	43
+Tureta	Gidan Kare	Bimasa Rafi	70331	43
+Tureta	Kuruwa	Gidan Malam Hassan	70341	63
+Tureta	Kwarare	Gidan Dan Amo	70351	59
+Wamakko	Arkilla	Gidan Salanke	70411	91
+Wamakko	Bado	Kasarawa Shiyar Dan Jeka	70421	56
+Wamakko	Dundaye	Yarlabe Mahauta	70431	43
+Wamakko	Gidan Bubu	Gidan Gajere	70441	50
+Wamakko	Gidan Hamidu	Gidan Karo	70451	41
+Wurno	Achida	Shiyar Kobi	70511	50
+Wurno	Alkammu	Shiyar Kwasau	70521	47
+Wurno	Chacho-Marnona	Masaka	70531	58
+Wurno	Dinawa	Uban Dawaki	70541	57
+Wurno	Kwargaba	Yar Jega	70551	77
+Yabo	Bakale	Bakale Shiyar Makaranta	70611	68
+Yabo	Bengaje	Dono Shiyar Magaji	70621	66
+Yabo	Binjin Muza	Shiyar Alkalije	70631	81
+Yabo	Birniruwa	Kumatoyi S Makaranta	70641	49
+Yabo	Dagawa	Dagawa Yannami Shiyar Kanwuri 1	70651	39"""
 
 # Parse community mapping data
 COMMUNITY_DF = pd.read_csv(StringIO(COMMUNITY_MAPPING_DATA), sep='\t')
@@ -566,11 +602,12 @@ def preprocess_data(sheets_dict):
     # Process child_info sheet
     if not sheets_dict['child_info'].empty:
         df_child_info = sheets_dict['child_info'].copy()
-        # Convert age to numeric - check for both old and new date formats
+        # Convert age to numeric - SOKOTO SPECIFIC: MDA date was 15th to 20th December 2025
         age_col_variants = [
-            'Age of child ${child_id} as at when MDA was done (13th to 22nd December 2025)',
-            'Age of child ${child_id} as at when MDA was done (6th to 11th December 2025)',
-            'Age of child ${child_id} as at when MDA was done (19th to 25th July 2025)'
+            'Age of child ${child_id} as at when MDA was done (15th to 20th December 2025)',
+            'Age of ${child_name} as at when MDA was done (15th to 20th December 2025)',
+            'age_months',
+            'child_age'
         ]
         for age_col in age_col_variants:
             if age_col in df_child_info.columns:
@@ -581,17 +618,15 @@ def preprocess_data(sheets_dict):
                 break
         sheets_dict['child_info'] = df_child_info
     
-    # Process child_infoo sheet (children <5 years)
+    # Process child_infoo sheet (children 1-59 months)
     if not sheets_dict['child_infoo'].empty:
         df_child_infoo = sheets_dict['child_infoo'].copy()
-        # Convert age column - check for Adamawa column name first
+        # Convert age column - SOKOTO SPECIFIC: MDA date was 15th to 20th December 2025
         age_col_variants = [
+            'Q88. Child name and age ${child_idd} as at when MDA was done (15th to 20th December 2025)',
             'child_names11',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (27th November to 2nd December or 13th to 14th December 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (21st to 27th November 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (13th to 22nd December 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (6th to 11th December 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (19th to 25th July 2025)'
+            'age_months',
+            'child_age'
         ]
         for age_col in age_col_variants:
             if age_col in df_child_infoo.columns:
@@ -602,9 +637,13 @@ def preprocess_data(sheets_dict):
     # Process net_repeat sheet
     if not sheets_dict['net_repeat'].empty:
         df_net = sheets_dict['net_repeat'].copy()
-        # Convert months column to numeric
-        months_col = 'Q81. Net ${net_id} :How many months ago did your household get the mosquito net?'
-        if months_col in df_net.columns:
+        # Convert months column to numeric - handle both formats (with/without space after colon)
+        months_col = find_column(df_net, [
+            'Q81. Net ${net_id}: How many months ago did your household get the mosquito net?',  # NEW format (space after colon)
+            'Q81. Net ${net_id} :How many months ago did your household get the mosquito net?',  # OLD format (no space)
+            'months_since_net'
+        ])
+        if months_col:
             df_net['months_since_net'] = pd.to_numeric(df_net[months_col], errors='coerce')
         sheets_dict['net_repeat'] = df_net
     
@@ -919,7 +958,7 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     # Use full_df for parent lookup if provided, otherwise use df
     lookup_df = full_df if full_df is not None and not full_df.empty else df
     
-    # Find column names flexibly - KEBBI SPECIFIC COLUMNS (exact names from schema)
+    # Find column names flexibly - SOKOTO SPECIFIC COLUMNS (exact names from schema)
     lga_col = find_column(lookup_df, [
         'Q2. Local Government Area',
         'lgas',
@@ -976,7 +1015,7 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                 'Enumerator': row.get(enumerator_col, 'N/A') if enumerator_col else 'N/A'
             }
     
-    # Now use df (filtered) for column lookups in QC checks - KEBBI SPECIFIC (exact names from schema)
+    # Now use df (filtered) for column lookups in QC checks - SOKOTO SPECIFIC (exact names from schema)
     lga_col = find_column(df, [
         'Q2. Local Government Area',
         'lgas',
@@ -1122,19 +1161,16 @@ def perform_qc_checks(df, child_df=None, full_df=None):
     
     # QC Check 5: Check child_infoo sheet if provided (children 1-59 months)
     if child_df is not None and not child_df.empty:
-        # Find child sheet columns - KEBBI SPECIFIC (exact column name from schema)
+        # Find child sheet columns - SOKOTO SPECIFIC: MDA was 15th to 20th December 2025
         age_col = find_column(child_df, [
-            'Q88. Child name and age ${child_idd} as at when MDA was done (27th November to 2nd December or 13th to 14th December 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (21st to 27th November 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (13th to 22nd December 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (6th to 11th December 2025)',
-            'Q88. Child name and age ${child_idd} as at when MDA was done (19th to 25th July 2025)',
+            'Q88. Child name and age ${child_idd} as at when MDA was done (15th to 20th December 2025)',
             'child_names11',
             'age_months',
             'child_age'
         ])
         q94_col = find_column(child_df, [
             'Q94. Did child ${child_idd} swallow the AZM offered?',
+            'Q94. Did ${child_names11} swallow the AZM offered?',  # Fallback for old format
             'swallow',
             'Q94',
             'child_swallow_azm'
@@ -1304,7 +1340,7 @@ def perform_qc_checks(df, child_df=None, full_df=None):
         'Enumerator', 
         'enumerator_name'
     ])
-    # KEBBI SPECIFIC AMENITY COLUMNS (from actual data schema with Q## format)
+    # SOKOTO SPECIFIC AMENITY COLUMNS (from actual data schema with Q## format)
     amenity_cols = [
         'Q23. Electricity', 'Q24. Radio', 'Q25. Television', 'Q26. A non-mobile telephone',
         'Q27. Computer', 'Q28. Refrigerator', 'Q29. Chair', 'Q30. Bed', 'Q31. Sofa',
@@ -1396,7 +1432,7 @@ def login_page():
             SARMAAN II Coverage Dashboard
         </h1>
         <p style='color: #666; font-size: 1.1rem; font-weight: 500;'>
-            Kebbi State - Secure Data Analytics Platform
+            Sokoto State - Secure Data Analytics Platform
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -1410,7 +1446,7 @@ def login_page():
             - Username: `Admin`
             
             **LGA Users:**
-            - `Aleiro`, `Argungu`, `Bagudo`, `Fakai`, `Maiyama`, `Shanga`
+            - `Kware`, `Rabah`, `Tureta`, `Wamakko`, `Wurno`, `Yabo`
             
             """)
         
@@ -1893,7 +1929,7 @@ def run_dashboard():
         st.success("✅ **No QC issues found!** All data quality checks passed successfully.")
         
         # COMPREHENSIVE Debug info to help understand why no issues found
-        with st.expander("🔍 DEBUG: Show ALL Columns & QC Check Results", expanded=True):
+        with st.expander("🔍 DEBUG: Show ALL Columns & QC Check Results", expanded=False):
             st.write(f"**Total records in filtered_df:** {len(filtered_df)}")
             st.write(f"**Total columns in filtered_df:** {len(filtered_df.columns)}")
             st.write(f"**Child records (child_infoo):** {len(child_infoo_df) if child_infoo_df is not None and not child_infoo_df.empty else 0}")
@@ -1946,9 +1982,9 @@ def run_dashboard():
                 st.write(f"- Occupation column: **{occupation_col if occupation_col else '❌ NOT FOUND'}**")
                 if education_col and occupation_col:
                     # Show unique values for debugging
-                    st.write(f"**Unique Education values:**")
+                    st.write("**Unique Education values:**")
                     st.code("\n".join(filtered_df[education_col].dropna().unique().astype(str).tolist()[:20]))
-                    st.write(f"**Unique Occupation values:**")
+                    st.write("**Unique Occupation values:**")
                     st.code("\n".join(filtered_df[occupation_col].dropna().unique().astype(str).tolist()[:20]))
                     
                     # Check for "No Formal Education"
@@ -2101,15 +2137,13 @@ def run_dashboard():
                     st.code("\n".join([f"{i+1}. {col}" for i, col in enumerate(child_infoo_df.columns)]))
                     
                     age_col = find_column(child_infoo_df, [
-                        'Q88. Child name and age ${child_idd} as at when MDA was done (21st to 27th November 2025)',
-                        'Q88. Child name and age ${child_idd} as at when MDA was done (13th to 22nd December 2025)',
-                        'Q88. Child name and age ${child_idd} as at when MDA was done (6th to 11th December 2025)',
-                        'Q88. Child name and age ${child_idd} as at when MDA was done (19th to 25th July 2025)',
+                        'Q88. Child name and age ${child_idd} as at when MDA was done (12th to 16th December 2025)',
                         'age_months',
                         'child_age'
                     ])
                     q94_col = find_column(child_infoo_df, [
-                        'Q94. Did child ${child_idd} swallow the AZM offered?',
+                        'Q94. Did ${child_names11} swallow the AZM offered?',
+                        'Q94. Did child ${child_idd} swallow the AZM offered?',  # Fallback for old format
                         'Q94',
                         'child_swallow_azm',
                         'swallow'
