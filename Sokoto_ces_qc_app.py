@@ -2,11 +2,11 @@
 # SARMAAN II COVERAGE EVALUATION DASHBOARD - SOKOTO STATE
 # =============================================================================
 # 
-# DATA SCHEMA INFORMATION (Updated: April 1, 2026)
+# DATA SCHEMA INFORMATION (Updated: April 5, 2026)
 # -------------------------------------------------
 # This dashboard processes data from KoboToolbox with the following structure:
 #
-# 1. MAIN SHEET: "SARMAAN II C3 SOKOTO COVERAGE EVALUATION LIVE FORM"
+# 1. MAIN SHEET: "SARMAAN II C3 SOKOTO COVERAGE EVALUATION PILOT FORM"
 #    - Household questionnaire data
 #    - MDA Date Reference: 15th to 20th December 2025
 #    - Key columns: Q2 (LGA), Q3 (Ward), Q4 (Community), Q8 (Date)
@@ -21,13 +21,15 @@
 # 3. CHILD_INFOO SHEET (Main Coverage Data)
 #    - Detailed info for eligible children (1-59 months)
 #    - Q88: Child name and age (15th to 20th December 2025)
-#    - Q89: Sex of ${child_names11} ${child_idd}
-#    - Q90: Did someone offer child ${child_idd} azithromycin...
-#    - Q91-Q92: Reasons not offered/refused
-#    - Q93: Was child ${child_idd} weighed before being offered AZM
-#    - Q94: Swallowed AZM, Q95: Swallowed in presence
-#    - Q96-Q97: Reasons not swallowed, Q98-Q101: Adverse reactions
-#    - NOTE: Questions use both ${child_names11} and ${child_idd} formats
+#    - Q89: Sex of ${child_names11}
+#    - Q90: Did someone offer ${child_names11} azithromycin...
+#    - Q91-Q92: Reasons not offered/refused (using ${child_names11})
+#    - Q93: Was ${child_names11}'s height measured before being offered AZM
+#    - Q94: Did ${child_names11} swallow the AZM offered?
+#    - Q95: Swallowed in presence
+#    - Q96-Q97: Reasons not swallowed (using ${child_names11})
+#    - Q98-Q101: Adverse reactions (using ${child_names11})
+#    - NOTE: All questions use ${child_names11} consistently (NOT ${child_idd})
 #
 # 4. NET_REPEAT SHEET
 #    - Mosquito net data per household
@@ -1169,8 +1171,8 @@ def perform_qc_checks(df, child_df=None, full_df=None):
             'child_age'
         ])
         q94_col = find_column(child_df, [
-            'Q94. Did child ${child_idd} swallow the AZM offered?',
-            'Q94. Did ${child_names11} swallow the AZM offered?',  # Fallback for old format
+            'Q94. Did ${child_names11} swallow the AZM offered?',
+            'Q94. Did child ${child_idd} swallow the AZM offered?',  # Fallback for old format
             'swallow',
             'Q94',
             'child_swallow_azm'
@@ -2137,7 +2139,8 @@ def run_dashboard():
                     st.code("\n".join([f"{i+1}. {col}" for i, col in enumerate(child_infoo_df.columns)]))
                     
                     age_col = find_column(child_infoo_df, [
-                        'Q88. Child name and age ${child_idd} as at when MDA was done (12th to 16th December 2025)',
+                        'Q88. Child name and age ${child_idd} as at when MDA was done (15th to 20th December 2025)',
+                        'child_names11',
                         'age_months',
                         'child_age'
                     ])
