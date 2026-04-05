@@ -2151,7 +2151,7 @@ def run_dashboard():
                     st.write(f"- **Child age column:** {age_col if age_col else '❌ NOT FOUND'}")
                     st.write(f"- **Q94 (Swallow AZM) column:** {q94_col if q94_col else '❌ NOT FOUND'}")
                     
-                    if age_col:
+                    if age_col and age_col in child_infoo_df.columns:
                         st.write("**Sample age values (first 10):**")
                         st.code("\n".join(child_infoo_df[age_col].head(10).astype(str).tolist()))
                         
@@ -2167,10 +2167,14 @@ def run_dashboard():
                                     under_1_count += 1
                         st.write(f"- **Children >59 months: {over_59_count}**")
                         st.write(f"- **Children <1 month: {under_1_count}**")
+                    else:
+                        st.warning("⚠️ Age column not found in child_infoo sheet")
                     
-                    if q94_col:
+                    if q94_col and q94_col in child_infoo_df.columns:
                         yes_count = len(child_infoo_df[child_infoo_df[q94_col].astype(str).str.contains('Yes', case=False, na=False)])
                         st.write(f"- **Children who swallowed AZM (Q94=Yes): {yes_count}**")
+                    else:
+                        st.warning("⚠️ Q94 column not found in child_infoo sheet")
                 else:
                     st.warning("⚠️ Child sheet (child_infoo) is empty or not loaded!")
     
