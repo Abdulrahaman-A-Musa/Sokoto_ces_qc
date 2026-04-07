@@ -83,15 +83,15 @@ Kware	Durbawa	Torankar Dakare Y	70131	58
 Kware	Gandu	Ummaruma	70141	43
 Kware	Gidan Rugga More	D Maigari	70151	54
 Rabah	Gandi 1	Dubbulawa	70211	42
-Rabah	Gandi 2	Dan Gazori [Idp]	70221	63
-Rabah	Goddodi	Shyar Durumbu	70231	77
+Rabah	Rara	Shiyar Makera	70221	63
+Rabah	Rabah	Shiyar Majijira A	70231	77
 Rabah	Kurya	Shiyar Dan Hajo	70241	73
 Rabah	Maikujera	Shiyar Galadima Kada A	70251	51
-Tureta	Duma	Makera	70311	47
+Tureta	Tureta	Sabon Fege Tanki	70311	47
 Tureta	Furagirke	Garbekane Assibiti	70321	43
-Tureta	Gidan Kare	Bimasa Rafi	70331	43
-Tureta	Kuruwa	Gidan Malam Hassan	70341	63
-Tureta	Kwarare	Gidan Dan Amo	70351	59
+Tureta	Lofa	Shiyar Galma	70331	43
+Tureta	Tsamiya	Shiyar Hakimi Kanwuri	70341	63
+Tureta	Lamba Tureta	Shiyar Runji	70351	59
 Wamakko	Arkilla	Gidan Salanke	70411	91
 Wamakko	Bado	Kasarawa Shiyar Dan Jeka	70421	56
 Wamakko	Dundaye	Yarlabe Mahauta	70431	43
@@ -99,14 +99,14 @@ Wamakko	Gidan Bubu	Gidan Gajere	70441	50
 Wamakko	Gidan Hamidu	Gidan Karo	70451	41
 Wurno	Achida	Shiyar Kobi	70511	50
 Wurno	Alkammu	Shiyar Kwasau	70521	47
-Wurno	Chacho-Marnona	Masaka	70531	58
-Wurno	Dinawa	Uban Dawaki	70541	57
-Wurno	Kwargaba	Yar Jega	70551	77
+Wurno	Marafa	Gidadawa	70531	58
+Wurno	Dinawa	Sarkin Yaki	70541	57
+Wurno	Magaryawa	Sabon-Gari Doka	70551	77
 Yabo	Bakale	Bakale Shiyar Makaranta	70611	68
 Yabo	Bengaje	Dono Shiyar Magaji	70621	66
-Yabo	Binjin Muza	Shiyar Alkalije	70631	81
-Yabo	Birniruwa	Kumatoyi S Makaranta	70641	49
-Yabo	Dagawa	Dagawa Yannami Shiyar Kanwuri 1	70651	39"""
+Yabo	Yabo B	Shiyar Ajiya	70631	81
+Yabo	Birniruwa	Shiyar Galoji	70641	49
+Yabo	Dagawa	Shiyar Inname	70651	39"""
 
 # Parse community mapping data
 COMMUNITY_DF = pd.read_csv(StringIO(COMMUNITY_MAPPING_DATA), sep='\t')
