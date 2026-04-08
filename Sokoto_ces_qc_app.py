@@ -2195,7 +2195,7 @@ def run_dashboard():
             </div>
             <div style='border-left: 2px solid #dee2e6; height: 30px;'></div>
             <div style='font-size: 0.9rem; color: #6c757d;'>
-                SARMAAN II Coverage Evaluation Dashboard - Kebbi State
+                SARMAAN II Coverage Evaluation Dashboard - Sokoto State
             </div>
         </div>
         <div style='margin-top: 1rem; font-size: 0.85rem; color: #868e96;'>
