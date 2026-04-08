@@ -96,7 +96,7 @@ Wamakko	Arkilla	Gidan Salanke	70411	91
 Wamakko	Bado	Kasarawa Shiyar Dan Jeka	70421	56
 Wamakko	Dundaye	Yarlabe Mahauta	70431	43
 Wamakko	Gidan Bubu	Gidan Gajere	70441	50
-Wamakko	Gidan Hamidu	Gidan Karo	70451	41
+Wamakko	Gidan Hamidu	Gidan Mala	70451	41
 Wurno	Achida	Shiyar Kobi	70511	50
 Wurno	Alkammu	Shiyar Kwasau	70521	47
 Wurno	Marafa	Gidadawa	70531	58
