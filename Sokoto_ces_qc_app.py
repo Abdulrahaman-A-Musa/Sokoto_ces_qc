@@ -96,7 +96,7 @@ Wamakko	Arkilla	Gidan Salanke	70411	91
 Wamakko	Bado	Kasarawa Shiyar Dan Jeka	70421	56
 Wamakko	Dundaye	Yarlabe Mahauta	70431	43
 Wamakko	Gidan Bubu	Gidan Gajere	70441	50
-Wamakko	Gidan Hamidu	Gidan Mala	70451	41
+Wamakko	Gidan Hamidu	Gidan Karo	70451	41
 Wurno	Achida	Shiyar Kobi	70511	50
 Wurno	Alkammu	Shiyar Kwasau	70521	47
 Wurno	Marafa	Gidadawa	70531	58
@@ -1161,6 +1161,34 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                 'Row Index': idx
             })
     
+    # QC Check 4a: Total children in household less than total_eligible
+    children_hh_col = find_column(df, [
+        'How many children currently live in your household?',
+        'total_children',
+        'children_in_household'
+    ])
+    total_eligible_col = find_column(df, [
+        'total_eligible',
+        'eligible_children'
+    ])
+    
+    if children_hh_col and total_eligible_col:
+        children_less_than_eligible = df[
+            pd.to_numeric(df[children_hh_col], errors='coerce') < pd.to_numeric(df[total_eligible_col], errors='coerce')
+        ]
+        for idx, row in children_less_than_eligible.iterrows():
+            qc_issues.append({
+                'LGA': row.get(lga_col, 'N/A') if lga_col else 'N/A',
+                'Ward': row.get(ward_col, 'N/A') if ward_col else 'N/A',
+                'Community': get_community_name(row.get(community_col, 'N/A')) if community_col else 'N/A',
+                'Unique HH ID': row.get(unique_code_col, 'N/A') if unique_code_col else 'N/A',
+                'Enumerator': row.get(enumerator_col, 'N/A') if enumerator_col else 'N/A',
+                'Validation Status': row.get(validation_status_col, 'N/A') if validation_status_col else 'N/A',
+                'Issue Type': 'Children in HH < Total Eligible',
+                'Description': f'Total children in household ({row.get(children_hh_col, "N/A")}) is less than total_eligible ({row.get(total_eligible_col, "N/A")})',
+                'Row Index': idx
+            })
+    
     # QC Check 5: Check child_infoo sheet if provided (children 1-59 months)
     if child_df is not None and not child_df.empty:
         # Find child sheet columns - SOKOTO SPECIFIC: MDA was 15th to 20th December 2025
@@ -2195,7 +2223,7 @@ def run_dashboard():
             </div>
             <div style='border-left: 2px solid #dee2e6; height: 30px;'></div>
             <div style='font-size: 0.9rem; color: #6c757d;'>
-                SARMAAN II Coverage Evaluation Dashboard - Sokoto State
+                SARMAAN II Coverage Evaluation Dashboard - Kebbi State
             </div>
         </div>
         <div style='margin-top: 1rem; font-size: 0.85rem; color: #868e96;'>
