@@ -1426,6 +1426,46 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                                     'Row Index': idx
                                 })
     
+    # QC Check 8: Verify child_infoo count matches the count in main sheet
+    # Compare sum of repeat group count with actual child records
+    if child_df is not None and not child_df.empty and uuid_col:
+        # Find the count column for child_infoo repeat group
+        child_count_col = find_column(df, [
+            '_SARMAAN II C3 SOKOTO COVERAGE EVALUATION PILOT FORM_child_infoo_count',
+            '_child_infoo_count',
+            'child_infoo_count',
+            '_SARMAAN_child_infoo_count'
+        ])
+        
+        if child_count_col:
+            # For each household in main sheet, check if reported count matches actual child records
+            for idx, row in df.iterrows():
+                household_uuid = row.get(uuid_col, None)
+                if household_uuid and pd.notna(household_uuid):
+                    # Get reported count from main sheet
+                    reported_count = pd.to_numeric(row.get(child_count_col, 0), errors='coerce')
+                    if pd.isna(reported_count):
+                        reported_count = 0
+                    else:
+                        reported_count = int(reported_count)
+                    
+                    # Get actual count from child_infoo sheet
+                    actual_count = len(child_df[child_df['_submission__uuid'] == household_uuid])
+                    
+                    # Flag if counts don't match
+                    if reported_count != actual_count:
+                        qc_issues.append({
+                            'LGA': row.get(lga_col, 'N/A') if lga_col else 'N/A',
+                            'Ward': row.get(ward_col, 'N/A') if ward_col else 'N/A',
+                            'Community': get_community_name(row.get(community_col, 'N/A')) if community_col else 'N/A',
+                            'Unique HH ID': row.get(unique_code_col, 'N/A') if unique_code_col else 'N/A',
+                            'Enumerator': row.get(enumerator_col, 'N/A') if enumerator_col else 'N/A',
+                            'Validation Status': row.get(validation_status_col, 'N/A') if validation_status_col else 'N/A',
+                            'Issue Type': 'Child Count Mismatch',
+                            'Description': f'Reported child count ({reported_count}) does not match actual child records ({actual_count}). Difference: {abs(reported_count - actual_count)}',
+                            'Row Index': idx
+                        })
+    
     # Convert to DataFrame
     qc_df = pd.DataFrame(qc_issues)
     
