@@ -96,7 +96,7 @@ Wamakko	Arkilla	Gidan Salanke	70411	91
 Wamakko	Bado	Kasarawa Shiyar Dan Jeka	70421	56
 Wamakko	Dundaye	Yarlabe Mahauta	70431	43
 Wamakko	Gidan Bubu	Gidan Gajere	70441	50
-Wamakko	Gidan Hamidu	Gidan Karo	70451	41
+Wamakko	Gidan Hamidu	Gidan Mala	70451	41
 Wurno	Achida	Shiyar Kobi	70511	50
 Wurno	Alkammu	Shiyar Kwasau	70521	47
 Wurno	Marafa	Gidadawa	70531	58
@@ -580,8 +580,8 @@ def preprocess_data(sheets_dict):
     ]
     for col in text_cols_to_clean:
         if col in df_main.columns:
-            # Remove the � character and other problematic characters
-            df_main[col] = df_main[col].astype(str).str.replace('�', '', regex=False)
+            # Remove the  character and other problematic characters
+            df_main[col] = df_main[col].astype(str).str.replace('', '', regex=False)
             # Remove any trailing whitespace and non-printable characters
             df_main[col] = df_main[col].str.strip()
             # Remove any remaining non-alphanumeric characters from the end (except spaces in the middle)
@@ -1161,34 +1161,6 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                 'Row Index': idx
             })
     
-    # QC Check 4a: Total children in household less than total_eligible
-    children_hh_col = find_column(df, [
-        'How many children currently live in your household?',
-        'total_children',
-        'children_in_household'
-    ])
-    total_eligible_col = find_column(df, [
-        'total_eligible',
-        'eligible_children'
-    ])
-    
-    if children_hh_col and total_eligible_col:
-        children_less_than_eligible = df[
-            pd.to_numeric(df[children_hh_col], errors='coerce') < pd.to_numeric(df[total_eligible_col], errors='coerce')
-        ]
-        for idx, row in children_less_than_eligible.iterrows():
-            qc_issues.append({
-                'LGA': row.get(lga_col, 'N/A') if lga_col else 'N/A',
-                'Ward': row.get(ward_col, 'N/A') if ward_col else 'N/A',
-                'Community': get_community_name(row.get(community_col, 'N/A')) if community_col else 'N/A',
-                'Unique HH ID': row.get(unique_code_col, 'N/A') if unique_code_col else 'N/A',
-                'Enumerator': row.get(enumerator_col, 'N/A') if enumerator_col else 'N/A',
-                'Validation Status': row.get(validation_status_col, 'N/A') if validation_status_col else 'N/A',
-                'Issue Type': 'Children in HH < Total Eligible',
-                'Description': f'Total children in household ({row.get(children_hh_col, "N/A")}) is less than total_eligible ({row.get(total_eligible_col, "N/A")})',
-                'Row Index': idx
-            })
-    
     # QC Check 5: Check child_infoo sheet if provided (children 1-59 months)
     if child_df is not None and not child_df.empty:
         # Find child sheet columns - SOKOTO SPECIFIC: MDA was 15th to 20th December 2025
@@ -1425,46 +1397,6 @@ def perform_qc_checks(df, child_df=None, full_df=None):
                                     'Description': f'Enumerator "{enumerator}" - ALL {len(group)} urban records have NO amenities',
                                     'Row Index': idx
                                 })
-    
-    # QC Check 8: Verify child_infoo count matches the count in main sheet
-    # Compare sum of repeat group count with actual child records
-    if child_df is not None and not child_df.empty and uuid_col:
-        # Find the count column for child_infoo repeat group
-        child_count_col = find_column(df, [
-            '_SARMAAN II C3 SOKOTO COVERAGE EVALUATION PILOT FORM_child_infoo_count',
-            '_child_infoo_count',
-            'child_infoo_count',
-            '_SARMAAN_child_infoo_count'
-        ])
-        
-        if child_count_col:
-            # For each household in main sheet, check if reported count matches actual child records
-            for idx, row in df.iterrows():
-                household_uuid = row.get(uuid_col, None)
-                if household_uuid and pd.notna(household_uuid):
-                    # Get reported count from main sheet
-                    reported_count = pd.to_numeric(row.get(child_count_col, 0), errors='coerce')
-                    if pd.isna(reported_count):
-                        reported_count = 0
-                    else:
-                        reported_count = int(reported_count)
-                    
-                    # Get actual count from child_infoo sheet
-                    actual_count = len(child_df[child_df['_submission__uuid'] == household_uuid])
-                    
-                    # Flag if counts don't match
-                    if reported_count != actual_count:
-                        qc_issues.append({
-                            'LGA': row.get(lga_col, 'N/A') if lga_col else 'N/A',
-                            'Ward': row.get(ward_col, 'N/A') if ward_col else 'N/A',
-                            'Community': get_community_name(row.get(community_col, 'N/A')) if community_col else 'N/A',
-                            'Unique HH ID': row.get(unique_code_col, 'N/A') if unique_code_col else 'N/A',
-                            'Enumerator': row.get(enumerator_col, 'N/A') if enumerator_col else 'N/A',
-                            'Validation Status': row.get(validation_status_col, 'N/A') if validation_status_col else 'N/A',
-                            'Issue Type': 'Child Count Mismatch',
-                            'Description': f'Reported child count ({reported_count}) does not match actual child records ({actual_count}). Difference: {abs(reported_count - actual_count)}',
-                            'Row Index': idx
-                        })
     
     # Convert to DataFrame
     qc_df = pd.DataFrame(qc_issues)
@@ -2263,7 +2195,7 @@ def run_dashboard():
             </div>
             <div style='border-left: 2px solid #dee2e6; height: 30px;'></div>
             <div style='font-size: 0.9rem; color: #6c757d;'>
-                SARMAAN II Coverage Evaluation Dashboard - Kebbi State
+                SARMAAN II Coverage Evaluation Dashboard - Sokoto State
             </div>
         </div>
         <div style='margin-top: 1rem; font-size: 0.85rem; color: #868e96;'>
@@ -2286,4 +2218,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
